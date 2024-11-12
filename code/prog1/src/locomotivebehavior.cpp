@@ -21,20 +21,28 @@ void LocomotiveBehavior::run()
     //sharedSection->leave(loco);
 
     while (!PcoThread::thisThread()->stopRequested()) {
-        // Faire N tours
+        // Go round n times
         for (int i = 0; i < n; ++i) {
-            // S'il va arriver en tronçon commun, demander l'accès
+            // If it detects it's going to enter a common part of track, request access
+
+            // HOW DETECT SHARED AREA???
+                // I DONT KNOW HOW TO FIND/DECLARE WHERE IT IS
+
+
             sharedSection->access(loco);
-            // Quand il arrive à la fin du trançon commun, quitter proprement
+            // Once finished with the common part, leave properly
             sharedSection->leave(loco);
         }
 
-        // S'arrêter en gare à la fin du dernier tour
-            // Si l'autre train n'est pas en gare, attendre
+        // Stop at the station at the end of the last loop
+            // If the other train is not yet in it's station, wait
 
-            // Attendre 2 sec
+            // Wait for 2 seconds (usleep takes microseconds as a unit)
+            PcoThread::thisThread()->usleep(2000000);
         
-        // Redémarrer dans l'autre sens
+        // Start up again but in the other direction
+        loco.inverserSens();
+        loco.demarrer();
     }
     
 
@@ -58,7 +66,7 @@ void LocomotiveBehavior::printCompletionMessage()
     loco.afficherMessage("J'ai terminé");
 }
 
-static int generateRandom(int min, int max) {
+int LocomotiveBehavior::generateRandom(int min, int max) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(min, max);

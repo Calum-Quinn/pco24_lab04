@@ -29,6 +29,9 @@ public:
      */
     SharedSection() : sem(1), occupied(false) {
         // TODO
+
+        // Initialise sem to 1 so it can be used like a mutex
+        // initialise occupied to false as the trains don't start on the shared portion of track
     }
 
     /**
@@ -44,8 +47,8 @@ public:
 
         if(occupied) {
             loco.arreter();
-            sem.acquire(); // Bloque la locomotive puisque le tronçon est occupé
-            occupied = true; // Remet à true parce que s'il est débloqué c'est que le tronçon est devenu libre
+            sem.acquire(); // Blocks the train as the common part is occupied
+            occupied = true; // Sets occupied to true as the other train has now left and set it to false
             loco.demarrer();
         }
         else { // Tronçon libre
@@ -65,8 +68,8 @@ public:
     void leave(Locomotive& loco) override {
         // TODO
 
-        occupied = false;
-        sem.release();
+        occupied = false; // Show the other train that the track is now free
+        sem.release(); // Release the hold on the common portion
 
         // Exemple de message dans la console globale
         afficher_message(qPrintable(QString("The engine no. %1 leaves the shared section.").arg(loco.numero())));
@@ -78,8 +81,8 @@ private:
 
     // Méthodes privées ...
     // Attribut privés ...
-    PcoSemaphore sem; // Permet de faire attendre un train si le tronçon est occupé
-    bool occupied;  // Indique si le tronçon est actuellement occupé
+    PcoSemaphore sem; // To get a train to wait if the common part of track is occupied
+    bool occupied;  // Indicates whether the common part is currently occupied
 };
 
 

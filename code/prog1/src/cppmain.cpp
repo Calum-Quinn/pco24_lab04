@@ -25,6 +25,9 @@ void emergency_stop()
 {
     // TODO
     
+    arreter_loco(locoA.numero());
+    arreter_loco(locoB.numero());
+
     afficher_message("\nSTOP!");
 }
 

@@ -12,7 +12,7 @@
 
 /**
  * @brief La classe SharedSectionInterface est une interface (classe abstraite pure) qui définit
- * trois méthodes, request, getAccess et leave afin de gérer l'accès à une section partagée d'un
+ * deux méthodes, access et leave afin de gérer l'accès à une section partagée d'un
  * parcours de locomotives.
  */
 class SharedSectionInterface
