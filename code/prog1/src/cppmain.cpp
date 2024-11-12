@@ -24,7 +24,7 @@ static Locomotive locoB(42 /* Numéro (pour commande trains sur maquette réelle
 void emergency_stop()
 {
     // TODO
-
+    
     afficher_message("\nSTOP!");
 }
 
@@ -105,7 +105,7 @@ int cmain()
     // Création du thread pour la loco 1
     std::unique_ptr<Launchable> locoBehaveB = std::make_unique<LocomotiveBehavior>(locoB, sharedSection /*, autres paramètres ...*/);
 
-    // Lanchement des threads
+    // Lancement des threads
     afficher_message(qPrintable(QString("Lancement thread loco A (numéro %1)").arg(locoA.numero())));
     locoBehaveA->startThread();
     afficher_message(qPrintable(QString("Lancement thread loco B (numéro %1)").arg(locoB.numero())));

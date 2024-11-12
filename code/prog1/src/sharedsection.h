@@ -27,7 +27,7 @@ public:
      * @brief SharedSection Constructeur de la classe qui représente la section partagée.
      * Initialisez vos éventuels attributs ici, sémaphores etc.
      */
-    SharedSection() {
+    SharedSection() : sem(1), occupied(false) {
         // TODO
     }
 
@@ -42,6 +42,17 @@ public:
     void access(Locomotive &loco) override {
         // TODO
 
+        if(occupied) {
+            loco.arreter();
+            sem.acquire(); // Bloque la locomotive puisque le tronçon est occupé
+            occupied = true; // Remet à true parce que s'il est débloqué c'est que le tronçon est devenu libre
+            loco.demarrer();
+        }
+        else { // Tronçon libre
+            sem.acquire();
+            occupied = true;
+        }
+
         // Exemple de message dans la console globale
         afficher_message(qPrintable(QString("The engine no. %1 accesses the shared section.").arg(loco.numero())));
     }
@@ -54,6 +65,9 @@ public:
     void leave(Locomotive& loco) override {
         // TODO
 
+        occupied = false;
+        sem.release();
+
         // Exemple de message dans la console globale
         afficher_message(qPrintable(QString("The engine no. %1 leaves the shared section.").arg(loco.numero())));
     }
@@ -64,6 +78,8 @@ private:
 
     // Méthodes privées ...
     // Attribut privés ...
+    PcoSemaphore sem; // Permet de faire attendre un train si le tronçon est occupé
+    bool occupied;  // Indique si le tronçon est actuellement occupé
 };
 
 

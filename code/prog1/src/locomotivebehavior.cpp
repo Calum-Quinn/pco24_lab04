@@ -20,6 +20,24 @@ void LocomotiveBehavior::run()
     //sharedSection->access(loco);
     //sharedSection->leave(loco);
 
+    while (!PcoThread::thisThread()->stopRequested()) {
+        // Faire N tours
+        for (int i = 0; i < n; ++i) {
+            // S'il va arriver en tronçon commun, demander l'accès
+            sharedSection->access(loco);
+            // Quand il arrive à la fin du trançon commun, quitter proprement
+            sharedSection->leave(loco);
+        }
+
+        // S'arrêter en gare à la fin du dernier tour
+            // Si l'autre train n'est pas en gare, attendre
+
+            // Attendre 2 sec
+        
+        // Redémarrer dans l'autre sens
+    }
+    
+
     while(true) {
         // On attend qu'une locomotive arrive sur le contact 1.
         // Pertinent de faire ça dans les deux threads? Pas sûr...
@@ -38,4 +56,11 @@ void LocomotiveBehavior::printCompletionMessage()
 {
     qDebug() << "[STOP] Thread de la loco" << loco.numero() << "a terminé correctement";
     loco.afficherMessage("J'ai terminé");
+}
+
+static int generateRandom(int min, int max) {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(min, max);
+    return dis(gen);
 }

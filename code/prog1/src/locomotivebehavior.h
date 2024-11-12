@@ -11,6 +11,8 @@
 #include "launchable.h"
 #include "sharedsectioninterface.h"
 
+#include <random>
+
 /**
  * @brief La classe LocomotiveBehavior représente le comportement d'une locomotive
  */
@@ -21,7 +23,7 @@ public:
      * \brief locomotiveBehavior Constructeur de la classe
      * \param loco la locomotive dont on représente le comportement
      */
-    LocomotiveBehavior(Locomotive& loco, std::shared_ptr<SharedSectionInterface> sharedSection /*, autres paramètres éventuels */) : loco(loco), sharedSection(sharedSection) {
+    LocomotiveBehavior(Locomotive& loco, std::shared_ptr<SharedSectionInterface> sharedSection /*, autres paramètres éventuels */) : loco(loco), sharedSection(sharedSection), n(generateRandom(1,10)) {
         // Eventuel code supplémentaire du constructeur
     }
 
@@ -56,6 +58,16 @@ protected:
      *
      * Par exemple la priorité ou le parcours
      */
+
+    /**
+     * @brief function to generate a random integer within a specified range
+     */
+    static int generateRandom(int min, int max);
+
+    /**
+     * @brief number of loops to go through before stopping at the station
+     */
+    const int n;
 };
 
 #endif // LOCOMOTIVEBEHAVIOR_H
