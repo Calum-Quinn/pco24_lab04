@@ -10,6 +10,7 @@
 #include <QDebug>
 
 #include <pcosynchro/pcosemaphore.h>
+#include <pcosynchro/pcomutex.h>
 
 #include "locomotive.h"
 #include "ctrain_handler.h"
@@ -27,15 +28,15 @@ public:
      * @brief SharedSection Constructeur de la classe qui représente la section partagée.
      * Initialisez vos éventuels attributs ici, sémaphores etc.
      */
-    SharedSection() : sem(1), occupied(false), priority(PriorityMode::HIGH_PRIORITY) {
+    SharedSection() : sem(0), occupied(false), priority(PriorityMode::HIGH_PRIORITY) {
         // TODO
 
         // Initialise sem to 1 so it can be used like a mutex
         // Initialise occupied to false as the trains don't start on the shared portion of track
         // Initialise the priority mode to value the highest priority
         // Initialise requests to base values representing the absence of a request
-        requests[0] = 0;
-        requests[1] = 0;
+        requests[0] = -1;
+        requests[1] = -1;
     }
 
     /**
@@ -52,19 +53,22 @@ public:
         loco.afficherMessage("The other priority is " + QString::number(requests[indexConverter(loco, false)]));
         loco.afficherMessage("The requests look like this {" + QString::number(requests[0]) + "," + QString::number(requests[1]) + "}");
         loco.afficherMessage("My priority is less important than the other one");
-        loco.afficherMessage((occupied || requests[indexConverter(loco, priority == PriorityMode::HIGH_PRIORITY ? true : false)] < requests[indexConverter(loco, priority == PriorityMode::HIGH_PRIORITY ? false : true)]) ? "true" : "false");
+        loco.afficherMessage(QString::number(requests[indexConverter(loco, priority == PriorityMode::HIGH_PRIORITY ? true : false)]) + "<" + QString::number(requests[indexConverter(loco, priority == PriorityMode::HIGH_PRIORITY ? false : true)]));
 
         // Check whether the shared portion is occupied or if another train with a higher priority is waiting
             // the indexes are chosen depending on the priority mode so that the if is executed if the train has a less valued priority value than the other one waiting
         if (occupied || requests[indexConverter(loco, priority == PriorityMode::HIGH_PRIORITY ? true : false)] < requests[indexConverter(loco, priority == PriorityMode::HIGH_PRIORITY ? false : true)]) {
             loco.arreter();
-            sem.acquire(); // Blocks the train as the common part is occupied
+            sem.acquire(); // Blocks the train as the common part is occupied or higher priority train is there
+            mut.lock();
             occupied = true; // Sets occupied to true as the other train has now left and set it to false
+            mut.unlock();
             loco.demarrer();
         }
         else {
-            sem.acquire();
+            mut.lock();
             occupied = true;
+            mut.unlock();
         }
 
         // Exemple de message dans la console globale
@@ -79,10 +83,14 @@ public:
     void leave(Locomotive& loco) override {
         // TODO
 
-        // Update the shared variables, is locked by the semaphore
-        requests[indexConverter(loco, true)] = 0;
+        // Update the shared variables
+        mut.lock();
+        requests[indexConverter(loco, true)] = -1;
         occupied = false; // Show the other train that the track is now free
-        sem.release(); // Release the hold on the common portion
+        if (requests[indexConverter(loco, false)] != -1) {
+            sem.release(); // Release the hold on the common portion if another train is waiting
+        }
+        mut.unlock();
 
         // Exemple de message dans la console globale
         afficher_message(qPrintable(QString("The engine no. %1 leaves the shared section.").arg(loco.numero())));
