@@ -49,12 +49,7 @@ public:
      */
     void access(Locomotive &loco) override {
         // TODO
-        loco.afficherMessage("My priority " + QString::number(requests[indexConverter(loco, true)]));
-        loco.afficherMessage("The other priority is " + QString::number(requests[indexConverter(loco, false)]));
-        loco.afficherMessage("The requests look like this {" + QString::number(requests[0]) + "," + QString::number(requests[1]) + "}");
-        loco.afficherMessage("My priority is less important than the other one");
-        loco.afficherMessage(QString::number(requests[indexConverter(loco, priority == PriorityMode::HIGH_PRIORITY ? true : false)]) + "<" + QString::number(requests[indexConverter(loco, priority == PriorityMode::HIGH_PRIORITY ? false : true)]));
-
+        
         // Check whether the shared portion is occupied or if another train with a higher priority is waiting
             // the indexes are chosen depending on the priority mode so that the if is executed if the train has a less valued priority value than the other one waiting
         if (occupied || requests[indexConverter(loco, priority == PriorityMode::HIGH_PRIORITY ? true : false)] < requests[indexConverter(loco, priority == PriorityMode::HIGH_PRIORITY ? false : true)]) {
