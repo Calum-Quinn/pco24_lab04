@@ -25,19 +25,23 @@ public:
      * \brief locomotiveBehavior Constructeur de la classe
      * \param loco la locomotive dont on représente le comportement
      */
-    LocomotiveBehavior(Locomotive& loco, std::shared_ptr<SharedSectionInterface> sharedSection /*, autres paramètres éventuels */, int beforeSection, int afterSection, int station, int railroadSwitch, int direction, PcoSemaphore* stationWait, bool* wait, PcoMutex* mutex) : 
+    LocomotiveBehavior(Locomotive& loco, std::shared_ptr<SharedSectionInterface> sharedSection /*, autres paramètres éventuels */, int beforeSection, int afterSection, int beforeSection2, int afterSection2, int station, int railroadSwitch, int railroadSwitch2, int direction, PcoSemaphore* stationWait, bool* wait, PcoMutex* mutex) : 
         loco(loco), 
         sharedSection(sharedSection), 
         n(generateRandom(1,10)), 
         beforeSection(beforeSection), 
-        afterSection(afterSection), 
+        afterSection(afterSection),
+        beforeSection2(beforeSection2),
+        afterSection2(afterSection2), 
         station(station), 
-        railroadSwitch(railroadSwitch), 
+        railroadSwitch(railroadSwitch),
+        railroadSwitch2(railroadSwitch2),
         direction(direction),
         stationWait(stationWait),
         wait(wait),
         mutex(mutex) {
         // Eventuel code supplémentaire du constructeur
+        clockwise = true;
     }
 
 protected:
@@ -84,13 +88,25 @@ protected:
 
     /**
      * @brief contact point just before the shared section
+     * It can't be the same as the exit point in the other direction because it will not have space to stop otherwise
      */
     int beforeSection;
+
+    /**
+     * @brief contact point just before the shared section when going in the other direction
+     * It can't be the same as the exit point in the other direction because it will not have space to stop otherwise
+     */
+    int beforeSection2;
     
     /**
      * @brief contact point just after the shared section
      */
     int afterSection;
+
+    /**
+     * @brief contact point just after the shared section when going in the other direction
+     */
+    int afterSection2;
 
     /**
      * @brief contact point representing the station
@@ -101,6 +117,11 @@ protected:
      * @brief switch point at the end of the shared section
      */
     int railroadSwitch;
+
+    /**
+     * @brief switch point at the end of the shared section when going counter clockwise
+     */
+    int railroadSwitch2;
 
     /**
      * @brief direction in which the train needs to go when exiting the shared section
@@ -121,6 +142,11 @@ protected:
      * @brief mutex pour gérer l'accès au variables partagées
      */
     PcoMutex* mutex;
+
+    /**
+     * @brief defines in which direction the train is going to know what to modify in the shared section
+     */
+    bool clockwise;
 };
 
 #endif // LOCOMOTIVEBEHAVIOR_H

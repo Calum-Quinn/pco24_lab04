@@ -27,17 +27,17 @@ void LocomotiveBehavior::run()
             // SHARED SECTION
             // The section will be defined between the switches 13 and 10
 
-            // If it detects it's going to enter a common part of track, request access            
-            attendre_contact(beforeSection);
+            // If it detects it's going to enter a common part of track, request access
+            clockwise ? attendre_contact(beforeSection) : attendre_contact(beforeSection2);
             sharedSection->access(loco);
             
 
             // Change the track so the trains don't go in the same direction when exiting the section
-            diriger_aiguillage(railroadSwitch, direction, 0);
+            diriger_aiguillage(clockwise ? railroadSwitch : railroadSwitch2, direction, 0);
 
 
             // Once finished with the common part, leave properly
-            attendre_contact(afterSection);
+            clockwise ? attendre_contact(afterSection) : attendre_contact(afterSection2);
             sharedSection->leave(loco);
 
             // Wait for the train to get to the station, this indicates that it will have gone round once more
@@ -65,7 +65,8 @@ void LocomotiveBehavior::run()
             PcoThread::thisThread()->usleep(2000000);
         
         // Start up again but in the other direction
-        //loco.inverserSens();
+        loco.inverserSens();
+        clockwise = !clockwise;
         loco.demarrer();
     }
     
