@@ -39,6 +39,7 @@ Un train commence sur la boucle extérieure et l'autre sur la boucle intérieur.
 La détection du train est fait en comparant le numéro retourné par la classe `Locomotive` avec les valeurs écrits en dur dans le main. Ceci pourrait être amélioré en implémentant la détection du train au moment du passage sur un point de contact.
 
 ![Rails](./images/Tracks.png)
+*Train 42 bleu qui attend que le 7 rouge sorte de la zone partagée*
 
 ### Capteurs de position
 Pour détecter l'entrée et la sortie dans la zone commune il faut choisir des points de contacts suffisamment proche de la zone pour bloquer la plus petite zone possible.
