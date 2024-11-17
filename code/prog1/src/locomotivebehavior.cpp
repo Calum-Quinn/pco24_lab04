@@ -21,27 +21,51 @@ void LocomotiveBehavior::run()
     //sharedSection->leave(loco);
 
     while (!PcoThread::thisThread()->stopRequested()) {
-        // Go round n times
+        // Go round n times (use the contact points to know whether it has gone round)
         for (int i = 0; i < n; ++i) {
-            // If it detects it's going to enter a common part of track, request access
 
-            // HOW DETECT SHARED AREA???
-                // I DONT KNOW HOW TO FIND/DECLARE WHERE IT IS
+            // SHARED SECTION
+            // The section will be defined between the switches 13 and 10
 
-
+            // If it detects it's going to enter a common part of track, request access            
+            attendre_contact(beforeSection);
             sharedSection->access(loco);
+            
+
+            // Change the track so the trains don't go in the same direction when exiting the section
+            diriger_aiguillage(railroadSwitch, direction, 0);
+
+
             // Once finished with the common part, leave properly
+            attendre_contact(afterSection);
             sharedSection->leave(loco);
+
+            // Wait for the train to get to the station, this indicates that it will have gone round once more
+            attendre_contact(station);
         }
 
         // Stop at the station at the end of the last loop
+        loco.arreter();
             // If the other train is not yet in it's station, wait
-
+            mutex->lock();
+            if (*wait) {
+                // Wait for the other train
+                *wait = false;
+                mutex->unlock();
+                stationWait->acquire();
+            }
+            else {
+                // Release the other train
+                stationWait->release();
+                *wait = true;
+                mutex->unlock();
+            }
+            
             // Wait for 2 seconds (usleep takes microseconds as a unit)
             PcoThread::thisThread()->usleep(2000000);
         
         // Start up again but in the other direction
-        loco.inverserSens();
+        //loco.inverserSens();
         loco.demarrer();
     }
     

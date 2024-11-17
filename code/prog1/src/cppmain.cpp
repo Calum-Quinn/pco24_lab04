@@ -64,7 +64,7 @@ int cmain()
     diriger_aiguillage(11, TOUT_DROIT, 0);
     diriger_aiguillage(12, TOUT_DROIT, 0);
     diriger_aiguillage(13, TOUT_DROIT, 0);
-    diriger_aiguillage(14, DEVIE     , 0);
+    diriger_aiguillage(14, TOUT_DROIT, 0);
     diriger_aiguillage(15, DEVIE     , 0);
     diriger_aiguillage(16, TOUT_DROIT, 0);
     diriger_aiguillage(17, TOUT_DROIT, 0);
@@ -102,11 +102,26 @@ int cmain()
 
     // Création de la section partagée
     std::shared_ptr<SharedSectionInterface> sharedSection = std::make_shared<SharedSection>();
+    // Set the beginning and end of the shared section
+    int locoABefore = 25;
+    int locoAAfter = 15;
+    int locoAStation = 34;
+
+    int locoBBefore = 21;
+    int locoBAfter = 12;
+    int locoBStation = 30;
+
+    int railroadSwitch = 10;
+    bool wait = true;
+    PcoSemaphore stationWait{0};
+    PcoMutex mutex;
+
+    
 
     // Création du thread pour la loco 0
-    std::unique_ptr<Launchable> locoBehaveA = std::make_unique<LocomotiveBehavior>(locoA, sharedSection /*, autres paramètres ...*/);
+    std::unique_ptr<Launchable> locoBehaveA = std::make_unique<LocomotiveBehavior>(locoA, sharedSection /*, autres paramètres ...*/, locoABefore, locoAAfter, locoAStation, railroadSwitch, DEVIE, &stationWait, &wait, &mutex);
     // Création du thread pour la loco 1
-    std::unique_ptr<Launchable> locoBehaveB = std::make_unique<LocomotiveBehavior>(locoB, sharedSection /*, autres paramètres ...*/);
+    std::unique_ptr<Launchable> locoBehaveB = std::make_unique<LocomotiveBehavior>(locoB, sharedSection /*, autres paramètres ...*/, locoBBefore, locoBAfter, locoBStation, railroadSwitch, TOUT_DROIT, &stationWait, &wait, &mutex);
 
     // Lancement des threads
     afficher_message(qPrintable(QString("Lancement thread loco A (numéro %1)").arg(locoA.numero())));
