@@ -83,11 +83,11 @@ int cmain()
 
     // Loco 0
     // Exemple de position de départ
-    locoA.fixerPosition(25, 32);
+    locoA.fixerPosition(34, 5);
 
     // Loco 1
     // Exemple de position de départ
-    locoB.fixerPosition(22, 28);
+    locoB.fixerPosition(30, 31);
 
     /***********
      * Message *
@@ -103,30 +103,34 @@ int cmain()
     // Création de la section partagée
     std::shared_ptr<SharedSectionInterface> sharedSection = std::make_shared<SharedSection>();
     // Set the variables defining the shared section in both directions
-    int locoABefore = 25;
-    int locoAAfter = 15;
-    int locoAStation = 34;
-    int locoABefore2 = 14;
-    int locoAAfter2 = 24;
+    int locoARequest = 32; // Request point
+    int locoARequest2 = 7; // Request point counter clockwise
+    int locoAAfter = 15; // First point after shared section
+    int locoAAfter2 = 24; // First point after shared section counter clockwise
+    int locoAAccept = 25; // Accept point
+    int locoAAccept2 = 14; // Accept point counter clockwise
+    int locoAStation = 34; // Point representing the station
 
-    int locoBBefore = 21;
-    int locoBAfter = 12;
-    int locoBStation = 30;
-    int locoBBefore2 = 11;
-    int locoBAfter2 = 20;
+    int locoBRequest = 22; // Request point
+    int locoBRequest2 = 10; // Request point counter clockwise
+    int locoBAfter = 12; // First point after shared section
+    int locoBAfter2 = 20; // First point after shared section counter clockwise
+    int locoBAccept = 21; // Accept point
+    int locoBAccept2 = 11; // Accept point counter clockwise
+    int locoBStation = 30; // Point representing the station
 
-    int railroadSwitch = 10;
-    int railroadSwitch2 = 13;
-    bool wait = true;
+    int railroadSwitch = 10; // Railroad switch to change
+    int railroadSwitch2 = 13; // Railroad switch to change when going counter clockwise
+    bool wait = true; // Defines whether the train needs to wait for the other one to get to it's station
     PcoSemaphore stationWait{0};
     PcoMutex mutex;
 
     
 
     // Création du thread pour la loco 0
-    std::unique_ptr<Launchable> locoBehaveA = std::make_unique<LocomotiveBehavior>(locoA, sharedSection /*, autres paramètres ...*/, locoABefore, locoAAfter, locoABefore2, locoAAfter2, locoAStation, railroadSwitch, railroadSwitch2, DEVIE, &stationWait, &wait, &mutex);
+    std::unique_ptr<Launchable> locoBehaveA = std::make_unique<LocomotiveBehavior>(locoA, sharedSection /*, autres paramètres ...*/, locoARequest, locoAAfter, locoARequest2, locoAAfter2, locoAAccept, locoAAccept2, locoAStation, railroadSwitch, railroadSwitch2, DEVIE, &stationWait, &wait, &mutex);
     // Création du thread pour la loco 1
-    std::unique_ptr<Launchable> locoBehaveB = std::make_unique<LocomotiveBehavior>(locoB, sharedSection /*, autres paramètres ...*/, locoBBefore, locoBAfter, locoBBefore2, locoBAfter2, locoBStation, railroadSwitch, railroadSwitch2, TOUT_DROIT, &stationWait, &wait, &mutex);
+    std::unique_ptr<Launchable> locoBehaveB = std::make_unique<LocomotiveBehavior>(locoB, sharedSection /*, autres paramètres ...*/, locoBRequest, locoBAfter, locoBRequest2, locoBAfter2, locoBAccept, locoBAccept2, locoBStation, railroadSwitch, railroadSwitch2, TOUT_DROIT, &stationWait, &wait, &mutex);
 
     // Lancement des threads
     afficher_message(qPrintable(QString("Lancement thread loco A (numéro %1)").arg(locoA.numero())));

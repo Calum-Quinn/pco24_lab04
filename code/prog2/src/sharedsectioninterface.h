@@ -20,6 +20,11 @@ class SharedSectionInterface
 
 public:
 
+    enum class PriorityMode {
+        HIGH_PRIORITY,
+        LOW_PRIORITY,
+    };
+
     /**
      * @brief access Méthode à appeler pour accéder à la section partagée, doit arrêter la
      * locomotive et mettre son thread en attente si la section est occupée par une autre locomotive.
@@ -36,6 +41,17 @@ public:
      * @param loco La locomotive qui quitte la section partagée
      */
     virtual void leave(Locomotive& loco) = 0;
+
+    /**
+     * @brief method to request access to the shared section
+     * @param loco the locomotive requesting access to the shared section
+     */
+    virtual void request(Locomotive& loco) = 0;
+
+    /**
+     * @brief method to change the way the priority is defined
+     */
+    virtual void togglePriorityMode() = 0;
 };
 
 #endif // SHAREDSECTIONINTERFACE_H

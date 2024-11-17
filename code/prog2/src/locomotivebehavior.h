@@ -25,14 +25,16 @@ public:
      * \brief locomotiveBehavior Constructeur de la classe
      * \param loco la locomotive dont on représente le comportement
      */
-    LocomotiveBehavior(Locomotive& loco, std::shared_ptr<SharedSectionInterface> sharedSection /*, autres paramètres éventuels */, int beforeSection, int afterSection, int beforeSection2, int afterSection2, int station, int railroadSwitch, int railroadSwitch2, int direction, PcoSemaphore* stationWait, bool* wait, PcoMutex* mutex) : 
+    LocomotiveBehavior(Locomotive& loco, std::shared_ptr<SharedSectionInterface> sharedSection /*, autres paramètres éventuels */, int request, int afterSection, int request2, int afterSection2, int accept, int accept2, int station, int railroadSwitch, int railroadSwitch2, int direction, PcoSemaphore* stationWait, bool* wait, PcoMutex* mutex) : 
         loco(loco), 
         sharedSection(sharedSection), 
         n(generateRandom(1,10)), 
-        beforeSection(beforeSection), 
+        requestPoint(request), 
         afterSection(afterSection),
-        beforeSection2(beforeSection2),
-        afterSection2(afterSection2), 
+        requestPoint2(request2),
+        afterSection2(afterSection2),
+        acceptancePoint(accept),
+        acceptancePoint2(accept2),
         station(station), 
         railroadSwitch(railroadSwitch),
         railroadSwitch2(railroadSwitch2),
@@ -87,16 +89,24 @@ protected:
     const int n;
 
     /**
-     * @brief contact point just before the shared section
-     * It can't be the same as the exit point in the other direction because it will not have space to stop otherwise
+     * @brief contact point before the shared section where the entrance request is sent
      */
-    int beforeSection;
+    int requestPoint;
 
     /**
-     * @brief contact point just before the shared section when going in the other direction
-     * It can't be the same as the exit point in the other direction because it will not have space to stop otherwise
+     * @brief contact point before the shared section where the entrance request is sent when going counter clockwise
      */
-    int beforeSection2;
+    int requestPoint2;
+
+    /**
+     * @brief contact point just before the shared section where the decision to stop or not is made
+     */
+    int acceptancePoint;
+
+    /**
+     * @brief contact point just before the shared section where the decision to stop or not is made when going counter clockwise
+     */
+    int acceptancePoint2;
     
     /**
      * @brief contact point just after the shared section

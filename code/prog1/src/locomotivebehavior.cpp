@@ -9,6 +9,8 @@
 
 void LocomotiveBehavior::run()
 {
+    loco.afficherMessage("Programme 1");
+
     //Initialisation de la locomotive
     loco.allumerPhares();
     loco.demarrer();
@@ -21,7 +23,7 @@ void LocomotiveBehavior::run()
     //sharedSection->leave(loco);
 
     while (!PcoThread::thisThread()->stopRequested()) {
-        // Go round n times (use the contact points to know whether it has gone round)
+        // Go round n times
         for (int i = 0; i < n; ++i) {
 
             // SHARED SECTION
@@ -39,10 +41,10 @@ void LocomotiveBehavior::run()
             // Once finished with the common part, leave properly
             clockwise ? attendre_contact(afterSection) : attendre_contact(afterSection2);
             sharedSection->leave(loco);
-
-            // Wait for the train to get to the station, this indicates that it will have gone round once more
-            attendre_contact(station);
         }
+
+        // Wait for the train to get to the station
+        attendre_contact(station);
 
         // Stop at the station at the end of the last loop
         loco.arreter();
@@ -68,14 +70,6 @@ void LocomotiveBehavior::run()
         loco.inverserSens();
         clockwise = !clockwise;
         loco.demarrer();
-    }
-    
-
-    while(true) {
-        // On attend qu'une locomotive arrive sur le contact 1.
-        // Pertinent de faire ça dans les deux threads? Pas sûr...
-        attendre_contact(1);
-        loco.afficherMessage("J'ai atteint le contact 1");
     }
 }
 

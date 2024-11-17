@@ -9,8 +9,12 @@
 
 void LocomotiveBehavior::run()
 {
+    loco.afficherMessage("Programme 2");
+
     //Initialisation de la locomotive
     loco.allumerPhares();
+    loco.priority = generateRandom(0,10);
+    loco.afficherMessage("My priority is " + QString::number(loco.priority));
     loco.demarrer();
     loco.afficherMessage("Ready!");
 
@@ -21,28 +25,32 @@ void LocomotiveBehavior::run()
     //sharedSection->leave(loco);
 
     while (!PcoThread::thisThread()->stopRequested()) {
-        // Go round n times (use the contact points to know whether it has gone round)
+        // Go round n times
         for (int i = 0; i < n; ++i) {
 
             // SHARED SECTION
             // The section will be defined between the switches 13 and 10
 
-            // If it detects it's going to enter a common part of track, request access
-            clockwise ? attendre_contact(beforeSection) : attendre_contact(beforeSection2);
+            // When the train gets to the request point, request access
+            clockwise ? attendre_contact(requestPoint) : attendre_contact(requestPoint2);
+            sharedSection->request(loco);
+
+            // When the train gets to the acceptance point
+            clockwise ? attendre_contact(acceptancePoint) : attendre_contact(acceptancePoint2);
             sharedSection->access(loco);
-            
 
             // Change the track so the trains don't go in the same direction when exiting the section
             diriger_aiguillage(clockwise ? railroadSwitch : railroadSwitch2, direction, 0);
 
-
-            // Once finished with the common part, leave properly
+            // When the train is leaving the shared section
             clockwise ? attendre_contact(afterSection) : attendre_contact(afterSection2);
             sharedSection->leave(loco);
-
-            // Wait for the train to get to the station, this indicates that it will have gone round once more
-            attendre_contact(station);
         }
+
+        loco.afficherMessage("Going to the station");
+
+        // Wait for the train to get to the station
+        attendre_contact(station);
 
         // Stop at the station at the end of the last loop
         loco.arreter();
@@ -63,19 +71,15 @@ void LocomotiveBehavior::run()
             mutex->unlock();
         }
             
+        // Update the priority mode and values
+        sharedSection->togglePriorityMode();
+        loco.priority = generateRandom(0, 10);
+        loco.afficherMessage("My priority is now " + QString::number(loco.priority));
         
         // Start up again but in the other direction
         loco.inverserSens();
         clockwise = !clockwise;
         loco.demarrer();
-    }
-    
-
-    while(true) {
-        // On attend qu'une locomotive arrive sur le contact 1.
-        // Pertinent de faire ça dans les deux threads? Pas sûr...
-        attendre_contact(1);
-        loco.afficherMessage("J'ai atteint le contact 1");
     }
 }
 
