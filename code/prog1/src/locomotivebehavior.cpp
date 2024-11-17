@@ -46,23 +46,23 @@ void LocomotiveBehavior::run()
 
         // Stop at the station at the end of the last loop
         loco.arreter();
-            // If the other train is not yet in it's station, wait
-            mutex->lock();
-            if (*wait) {
-                // Wait for the other train
-                *wait = false;
-                mutex->unlock();
-                stationWait->acquire();
-            }
-            else {
-                // Release the other train
-                stationWait->release();
-                *wait = true;
-                mutex->unlock();
-            }
-            
+        // If the other train is not yet in it's station, wait
+        mutex->lock();
+        if (*wait) {
+            // Wait for the other train
+            *wait = false;
+            mutex->unlock();
+            stationWait->acquire();
+        }
+        else {
             // Wait for 2 seconds (usleep takes microseconds as a unit)
             PcoThread::thisThread()->usleep(2000000);
+            // Release the other train
+            stationWait->release();
+            *wait = true;
+            mutex->unlock();
+        }
+            
         
         // Start up again but in the other direction
         loco.inverserSens();
