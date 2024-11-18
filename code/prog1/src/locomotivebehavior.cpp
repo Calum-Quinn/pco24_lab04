@@ -33,7 +33,8 @@ void LocomotiveBehavior::run()
             clockwise ? attendre_contact(beforeSection) : attendre_contact(beforeSection2);
             sharedSection->access(loco);
             
-
+            //Change the tracks so the train can enter the shared section
+            diriger_aiguillage(clockwise ? railroadSwitch2 : railroadSwitch, direction, 0);
             // Change the track so the trains don't go in the same direction when exiting the section
             diriger_aiguillage(clockwise ? railroadSwitch : railroadSwitch2, direction, 0);
 
