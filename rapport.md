@@ -35,7 +35,7 @@ Ceci car comme ça le premier à réellement être prêt à s'engager dans la zo
 
 ### Zone commune
 La zone partagée peut être placée n'importe où entre deux aiguillages. Nous l'avons positionné tout en haut entre les aiguillages 13 et 10.
-Un train commence sur la boucle extérieure et l'autre sur la boucle intérieur. Nous avons donc fait un contrôle de quel train est dans la zone commune pour choisir l'orientation de l'aiguillage de sortie.
+Un train commence sur la boucle extérieure et l'autre sur la boucle intérieur. Nous avons donc fait un contrôle de quel train va entrer dans la zone commune pour choisir l'orientation des aiguillages d'entrée et sortie.
 La détection du train est fait en comparant le numéro retourné par la classe `Locomotive` avec les valeurs écrits en dur dans le main. Ceci pourrait être amélioré en implémentant la détection du train au moment du passage sur un point de contact.
 
 ![Rails](./images/Tracks.png)
