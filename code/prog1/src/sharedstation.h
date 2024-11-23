@@ -12,13 +12,21 @@ public:
     /* Implémentez toute la logique que vous avez besoin pour que les locomotives
      * s'attendent correctement à la station */
 
+    /**
+     * @brief Signal that the train arrived at station. If he is the last, he will release the other. Otherwise he will wait that all trains arrive at the station.
+     */
     void trainAtStation();
 
 private:
-    /* TODO */
 
+    /**
+     * @brief total number of trains
+     */
     unsigned nbTrains;
 
+    /**
+     * @brief number of trains at their station
+     */
     unsigned nbTrainsAtStation = 0;
 
     /**
