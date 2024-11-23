@@ -128,9 +128,8 @@ protected:
     int direction;
 
     /**
-     * @brief mutex pour gérer l'accès au variables partagées
+     * @brief sharedStation logic for the shared station
      */
-
     SharedStation* sharedstation;
 
     /**

@@ -25,7 +25,8 @@ void SharedStation::trainAtStation(){
     if (nbTrainsAtStation == nbTrains) {
         // Wait for 2 seconds (usleep takes microseconds as a unit)
         PcoThread::thisThread()->usleep(2000000);
-        // Release the other train
+
+        // Release the other trains
         for(unsigned i = 0; i < nbTrains; ++i){
             stationWait.release();
         }
