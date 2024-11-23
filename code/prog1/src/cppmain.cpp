@@ -117,16 +117,14 @@ int cmain()
 
     int railroadSwitch = 10;
     int railroadSwitch2 = 13;
-    bool wait = true;
-    PcoSemaphore stationWait{0};
-    PcoMutex mutex;
 
+    SharedStation sharedstation(2);
     
 
     // Création du thread pour la loco 0
-    std::unique_ptr<Launchable> locoBehaveA = std::make_unique<LocomotiveBehavior>(locoA, sharedSection /*, autres paramètres ...*/, locoABefore, locoAAfter, locoABefore2, locoAAfter2, locoAStation, railroadSwitch, railroadSwitch2, DEVIE, &stationWait, &wait, &mutex);
+    std::unique_ptr<Launchable> locoBehaveA = std::make_unique<LocomotiveBehavior>(locoA, sharedSection /*, autres paramètres ...*/, locoABefore, locoAAfter, locoABefore2, locoAAfter2, locoAStation, railroadSwitch, railroadSwitch2, DEVIE, &sharedstation);
     // Création du thread pour la loco 1
-    std::unique_ptr<Launchable> locoBehaveB = std::make_unique<LocomotiveBehavior>(locoB, sharedSection /*, autres paramètres ...*/, locoBBefore, locoBAfter, locoBBefore2, locoBAfter2, locoBStation, railroadSwitch, railroadSwitch2, TOUT_DROIT, &stationWait, &wait, &mutex);
+    std::unique_ptr<Launchable> locoBehaveB = std::make_unique<LocomotiveBehavior>(locoB, sharedSection /*, autres paramètres ...*/, locoBBefore, locoBAfter, locoBBefore2, locoBAfter2, locoBStation, railroadSwitch, railroadSwitch2, TOUT_DROIT, &sharedstation);
 
     // Lancement des threads
     afficher_message(qPrintable(QString("Lancement thread loco A (numéro %1)").arg(locoA.numero())));

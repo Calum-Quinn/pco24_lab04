@@ -9,6 +9,7 @@
 
 #include "locomotive.h"
 #include "launchable.h"
+#include "sharedstation.h"
 #include "sharedsectioninterface.h"
 #include <pcosynchro/pcosemaphore.h>
 #include <pcosynchro/pcomutex.h>
@@ -25,7 +26,7 @@ public:
      * \brief locomotiveBehavior Constructeur de la classe
      * \param loco la locomotive dont on représente le comportement
      */
-    LocomotiveBehavior(Locomotive& loco, std::shared_ptr<SharedSectionInterface> sharedSection /*, autres paramètres éventuels */, int beforeSection, int afterSection, int beforeSection2, int afterSection2, int station, int railroadSwitch, int railroadSwitch2, int direction, PcoSemaphore* stationWait, bool* wait, PcoMutex* mutex) : 
+    LocomotiveBehavior(Locomotive& loco, std::shared_ptr<SharedSectionInterface> sharedSection /*, autres paramètres éventuels */, int beforeSection, int afterSection, int beforeSection2, int afterSection2, int station, int railroadSwitch, int railroadSwitch2, int direction, SharedStation* sharedstation) :
         loco(loco), 
         sharedSection(sharedSection), 
         n(generateRandom(1,10)), 
@@ -37,9 +38,7 @@ public:
         railroadSwitch(railroadSwitch),
         railroadSwitch2(railroadSwitch2),
         direction(direction),
-        stationWait(stationWait),
-        wait(wait),
-        mutex(mutex) {
+        sharedstation(sharedstation) {
         // Eventuel code supplémentaire du constructeur
         clockwise = true;
     }
@@ -129,19 +128,10 @@ protected:
     int direction;
 
     /**
-     * @brief semaphore to wait for the other train at the station
-     */
-    PcoSemaphore* stationWait;
-
-    /**
-     * @brief boolean to know whether the other train is in the station
-     */
-    bool* wait;
-
-    /**
      * @brief mutex pour gérer l'accès au variables partagées
      */
-    PcoMutex* mutex;
+
+    SharedStation* sharedstation;
 
     /**
      * @brief defines in which direction the train is going to know what to modify in the shared section
