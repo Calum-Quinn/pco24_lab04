@@ -9,15 +9,15 @@ Calum Quinn - Urs Behrmann
 - [Table des matières](#table-des-matières)
 - [Introduction au problème](#introduction-au-problème)
 - [Choix d'implémentation](#choix-dimplémentation)
-    - [Priorisation](#priorisation)
-    - [Zone commune](#zone-commune)
-    - [Capteurs de position](#capteurs-de-position)
-    - [Attente en gare](#attente-en-gare)
-    - [Inversion](#inversion)
+  - [Priorisation](#priorisation)
+  - [Zone commune](#zone-commune)
+  - [Capteurs de position](#capteurs-de-position)
+  - [Attente en gare](#attente-en-gare)
+  - [Inversion](#inversion)
 - [Tests effectués](#tests-effectués)
-    - [Priorisation](#priorisation-1)
-    - [Attente en gare](#attente-en-gare-1)
-    - [Arrêt d'urgence](#arrêt-durgence)
+  - [Priorisation](#priorisation-1)
+  - [Attente en gare](#attente-en-gare-1)
+  - [Arrêt d'urgence](#arrêt-durgence)
 
 ## Introduction au problème
 
@@ -29,19 +29,23 @@ Le projet est séparé en 2 parties. La première représente la mise en place d
 ## Choix d'implémentation
 
 ### Priorisation
+
 Lorsque les deux trains arrivent en même temps à la zone partagée et que ceux-ci ont la même priorité, le premier arrivé doit passer.
 Nous avons décidé de choisir le premier arrivé au moment du passage sur le point de contact d'acceptation et non au moment du request.
-Ceci car comme ça le premier à réellement être prêt à s'engager dans la zone le fera. Le deuxième attendra donc au point d'acceptation.
+Cette approche permet au train réellement prêt à s’engager dans la zone de le faire en premier. Le deuxième attendra donc au point d'acceptation.
 
 ### Zone commune
+
 La zone partagée peut être placée n'importe où entre deux aiguillages. Nous l'avons positionné tout en haut entre les aiguillages 13 et 10.
-Un train commence sur la boucle extérieure et l'autre sur la boucle intérieur. Nous avons donc fait un contrôle de quel train va entrer dans la zone commune pour choisir l'orientation des aiguillages d'entrée et sortie.
-La détection du train est fait en comparant le numéro retourné par la classe `Locomotive` avec les valeurs écrits en dur dans le main. Ceci pourrait être amélioré en implémentant la détection du train au moment du passage sur un point de contact.
+Un train commence sur la boucle extérieure et l'autre sur la boucle intérieur. Nous avons donc fait un contrôle de quel train va entrer dans la zone commune pour choisir l'orientation des aiguillages d'entrée et de sortie.
+La détection du train est faite en comparant le numéro retourné par la classe `Locomotive` avec les valeurs écrits en dur dans le main. Ceci pourrait être amélioré en implémentant la détection du train au moment du passage sur un point de contact.
 
 ![Rails](./images/Tracks.png)
+
 *Train 42 bleu qui attend que le 7 rouge sorte de la zone partagée*
 
 ### Capteurs de position
+
 Pour détecter l'entrée et la sortie dans la zone commune il faut choisir des points de contacts suffisamment proche de la zone pour bloquer la plus petite zone possible.
 Nous n'avons néanmoins pas choisi les points juste avant la zone à cause du fait que les trains ont une distance non nulle de freinage. Si nous détectons l'arrivée sur le dernier point avant la zone, les trains s'arrêtent dans la zone et peuvent avoir une collision même en étant arrêté.
 Pour le programme 2 nous avons placé le point d'acceptation au même endroit que le point du programme 1, le point de requête est donc le point juste avant.
@@ -49,10 +53,12 @@ Pour le programme 2 nous avons placé le point d'acceptation au même endroit qu
 Les points de sortie peuvent eux être positionné directement après la zone commune comme ça dès la sortie d'un train on peut autoriser l'entrée de l'autre.
 
 ### Attente en gare
+
 Pour la gestion de l'attente en gare nous utilisons une sémaphore et une variable partagée. Comme demandé, lorsque le premier train arrive il attend l'arrivée du deuxième, ils attendent ensuite 2sec et ensuite ils repartent.
 Plutôt que de faire une attente des deux threads séparément, nous faisons attendre 2sec le thread du deuxième arrivé et seulement après on débloque le premier en faisant un release sur la sémaphore. Ceci permet de faire un appel système de moins pour le premier thread.
 
 ### Inversion
+
 Une fois que les trains ont fini leur attente en gare ils doivent repartir en sens inverse. Sinon complique la détection et gestion de l'entrée et sortie en zone commune.
 Nous passons donc en paramètre au `LocomotiveBehavior` un double des points de détection request, accept et sortie pour gérer la détection en sens inverse.
 Pour les raisons soulevées avant concernant la distance de freinage, il n'est pas possible d'utiliser les points de sortie pour faire la détection à l'entrée de la zone lorsque le train arrive depuis l'autre côté.
@@ -63,6 +69,7 @@ Pour les raisons soulevées avant concernant la distance de freinage, il n'est p
 Tous les tests ont été effectués dans les deux sens de marche pour garantir que les contrôles sont identiques.
 
 ### Priorisation
+
 Selon les règles de priorités, nous avons testés différentes situation pour la décision de quel train passe en zone partagée en premier.
 Pour ça nous avons pu fabriquer manuellement les situations en employant la mise en attente des trains individuellement.
 
@@ -74,10 +81,12 @@ Ceci inclus aussi le cas où au moment d'arriver à la zone, l'autre train se tr
 Si les deux trains arrivent en même temps à la zone et que les deux ont la même priorité, c'est bien le premier qui arrive au point d'acceptation qui rentre dans la zone.
 
 ### Attente en gare
-Nous avons testé que si les deux n'arrivent pas en même temps à la gare que le premier attende le deuxième et ensuite attend encore 2sec pendant que l'autre est en gare.
+
+Nous avons testé que si les deux n'arrivent pas en même temps à la gare que le premier attende le deuxième et ensuite attend encore 2 secondes pendant que l'autre est en gare.
 Ceci contrôle aussi que les deux trains partent à chaque fois en même temps de la gare après y avoir passé le temps demandé pour le changement des passagers.
 
 ### Arrêt d'urgence
+
 L'arrêt d'urgence a été testé pour vérifier que les deux trains s'arrêtent en même temps et immédiatement. De plus ils ne redémarrent pas, ce qui correspond à nos attentes.
 
 L'arrêt d'urgence a été testé lorsque les trains sont dans toutes les situations possibles:
